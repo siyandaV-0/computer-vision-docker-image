@@ -1,0 +1,32 @@
+version: 2.1
+executors:
+  docker-publisher:
+    docker:
+      - image: cimg/base:stable
+jobs: 
+  publish-cv-image:
+    executor: docker-publisher
+    steps:  
+      - checkout
+      - setup_remote_docker  
+      - run:
+          name: "Build and Publish Docker Image"
+          command: |
+            docker build -t siyandav0/computer-vision-env .
+      - run:
+          name: "Login to the docker CLI"
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u  "$DOCKER_ID" --password-stdin
+      - run:
+          name: "Take those images and push them to docker hub"
+          command: |      
+            docker push siyandav0/computer-vision-env
+
+workflows:
+  version: 2
+  publish-images:
+    jobs:
+      - publish-cv-image:
+          filters:
+            branches:
+              only: master

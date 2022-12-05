@@ -38,6 +38,6 @@
   is 8000.
 
 ```
-$ docker run --rm -it --user $(id -u):$(id -g) --group-add container_user --group-add sudo -v "${PWD}:/app" -p 8000:8888 -p 6006:6006 siyandav0/computer-vision-env
+$ docker run --rm -it --runtime=nvidia --user $(id -u):$(id -g) --group-add container_user --group-add sudo -v "${PWD}:/app" -p 8000:8888 -p 6006:6006 siyandav0/computer-vision-env
 
 ```

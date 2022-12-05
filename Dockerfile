@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.7.1-base-ubuntu22.04
+FROM nvidia/cuda:11.2.0-cudnn8-devel-ubuntu20.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -62,7 +62,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --fix-mi
 
 ENV DEBIAN_FRONTEND noninteractive
 
-
 # Install cmake version that supports anaconda python path
 RUN wget -O cmake.tar.gz https://github.com/Kitware/CMake/releases/download/v3.15.4/cmake-3.15.4-Linux-x86_64.tar.gz
 RUN tar -xvf cmake.tar.gz
@@ -83,6 +82,9 @@ ARG PIP=pip3
 
 # Install Python:
 RUN apt-get update && apt-get install -y ${PYTHON}.9
+
+# Fix conda errors per Anaconda team until they can fix
+RUN mkdir ~/.conda
 
 # Install Anaconda(Miniconda)
 RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh && \

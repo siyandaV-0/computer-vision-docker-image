@@ -16,6 +16,7 @@
 - OpenCV with CUDA support
 - Tensoflow 2.9
 - Pytorch+cuDNN 11.8
+- Scikit-Image
 - Scikit-Learn
 - Jupyter-lab Server
 

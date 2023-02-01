@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.2.0-cudnn8-devel-ubuntu20.04
+FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -97,46 +97,20 @@ RUN conda install -c conda-forge gcc=12.1.0
 
 # Install pip for base conda env
 RUN conda install pip
-
+RUN conda install python=3.9
 # For CUDA profiling, TensorFlow requires CUPTI.
 ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
 
 # See http://bugs.python.org/issue19846
 ENV LANG C.UTF-8
 
-# pip install upgraded versions of these basic python packages always:
-RUN ${PIP} --no-cache-dir install --upgrade pip \
-                                            setuptools \
-                                            hdf5storage \
-                                            h5py \
-                                            py3nvml \
-                                            pyinstrument\
-                                            scikit-image \
-                                            imgaug \
-                                            scikit-learn \
-                                            matplotlib \
-                                            pandas \
-                                            seaborn \
-                                            numpy \
-                                            scipy \
-                                            yellowbrick \
-                                            plotly \
-                                            cufflinks 
 
 # Install Jupyter-lab:
 RUN ${PIP} install jupyterlab
 
-# Add auto-complete to Juypter
-RUN ${PIP} install  jupyter-tabnine \
-                    cupy-cuda111 \
-                    mlflow \
-                    seldon-core \
-                    albumentations \
-                    networkx \
-                    jupyter-tabnine \
-                    shap \
-                    tensor-sensor \
-                    ipykernel
+RUN ${PIP} install  mlflow \
+                    ipykernel\
+                    ipywidgets
 
 # Some Anaconda envirnoment setup packages:
 RUN conda update -n base -c defaults conda
@@ -144,7 +118,7 @@ RUN conda install pyg -c pyg
 RUN conda update conda
 RUN conda install numba
 RUN conda install -c conda-forge protobuf
-RUN conda install captum -c pytorch
+# RUN conda install captum -c pytorch
 
 # Install OpenCV with GPU support built from source:
 WORKDIR /
@@ -192,15 +166,34 @@ RUN make -j6 \
     	&& rm -rf /opencv \
         && rm -rf /opencv_contrib
 
+# Install Stable version of Numpy
+RUN ${PIP} install --upgrade numpy --ignore-installed numpy
 
-WORKDIR /
+# pip install upgraded versions of these basic python packages always:
+RUN ${PIP} install --upgrade-strategy only-if-needed pip \
+                                                     setuptools \
+                                                     hdf5storage \
+                                                     h5py \
+                                                     py3nvml \
+                                                     pyinstrument\
+                                                     scikit-image \
+                                                     imgaug \
+                                                     scikit-learn \
+                                                     pydot\
+                                                     matplotlib \
+                                                     pandas \
+                                                     seaborn \
+                                                     scipy \
+                                                     yellowbrick \
+                                                     plotly\ 
+                                                     --ignore-installed numpy
+
 
 # Install pytorch the latest stable version
-RUN ${PIP} install torch torchvision torchaudio
+RUN ${PIP} install torch torchvision torchaudio 
 
 # Install specific version of tensorflow
-RUN ${PIP} install tensorflow==2.9
-
+RUN ${PIP} install tensorflow
 
 WORKDIR /app
 EXPOSE 8888 6006
@@ -208,5 +201,5 @@ EXPOSE 8888 6006
 # Better container security versus running as root
 RUN useradd -ms /bin/bash container_user
 
-CMD ["bash", "-c", "source /etc/bash.bashrc && jupyter lab --notebook =./apps --ip 0.0.0.0 --no-browser --allow-root --NotebookApp.custom_display_url='http://localhost:8888' "]
+CMD ["bash", "-c", "source /etc/bash.bashrc && jupyter lab  --ip 0.0.0.0 --no-browser --allow-root --NotebookApp.custom_display_url='http://localhost:8888' "]
 

@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  cv-env:
+    image: cv-env:latest
+    build: .
+    environment:
+      - DISPLAY=${DISPLAY} # X-server display env variable X clients connect to.
+    volumes:
+      - '/tmp/.X11-unix:/tmp/.X11-unix:rw' # Host X-server socket
+      - './LRCN-model:/app'                # Attach our model's folder
+    user: "container_user"   
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    ports:
+      - 4444:8888   # Our jupyter-lab will be accessible on port 4444
+    tty: true
+    stdin_open: true

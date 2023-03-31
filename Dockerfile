@@ -32,4 +32,5 @@ RUN useradd -ms /bin/bash $USERNAME
 EXPOSE 8888 
 
 # We shall port map the 8888 to port 4444:
-CMD ["python3", "-c", "jupyter lab --notebook =./apps --ip 0.0.0.0 --no-browser --allow-root --NotebookApp.custom_display_url='http://localhost:4444'"]
+CMD ["bash", "-c", "source /etc/bash.bashrc && jupyter lab --notebook =./apps --ip 0.0.0.0 --no-browser --allow-root --NotebookApp.custom_display_url='http://localhost:4444'"]
+
